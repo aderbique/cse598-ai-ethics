@@ -28,7 +28,7 @@ from absl import flags
 from absl.testing import absltest
 import tensorflow.compat.v1 as tf
 
-from group_agnostic_fairness import main_trainer
+import main_trainer
 
 FLAGS = flags.FLAGS
 
