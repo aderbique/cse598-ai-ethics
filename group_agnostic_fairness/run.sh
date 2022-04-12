@@ -28,4 +28,3 @@ python -m group_agnostic_fairness.main_trainer_test
 python -m group_agnostic_fairness.adversarial_reweighting_model_test
 python -m group_agnostic_fairness.fairness_metrics_test
 python -m group_agnostic_fairness.baseline_model_test
-python -m group_agnostic_fairness.ips_reweighting_model_test
