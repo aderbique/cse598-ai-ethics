@@ -16,8 +16,9 @@
 set -e
 set -x
 
-virtualenv -p python3 .
-source ./bin/activate
+python3.6 -m venv venv
+
+source ./venv/bin/activate
 
 pip3 install -r group_agnostic_fairness/requirements.txt
 
