@@ -169,6 +169,11 @@ class _AdversarialReweightingModel():
     """Computes cross-entropy loss over labels and logits from primary task."""
     return tf.nn.sigmoid_cross_entropy_with_logits(labels=labels, logits=logits)
 
+  def _get_weighted_cross_entropy_loss(self, labels, logits, pos_weights):
+    """Computest the weighted cross-entropy loss over labels and logits from primary task"""
+    return tf.nn.weighted_cross_entropy_with_logits(targets=labels, logits=logits, pos_weight=0.5)
+
+
   def _adversary_loss(self,
                       labels,
                       logits,
@@ -189,7 +194,7 @@ class _AdversarialReweightingModel():
       example_weights: a float tensor of shape [batch_size, 1] for the
         reweighting values for each example in the batch.
       adversary_loss_type: (string) flag defining which loss type to use.
-        Takes values in ["hinge_loss","ce_loss"].
+        Takes values in ["hinge_loss","ce_loss", "wce_loss"].
 
     Returns:
       loss: (scalar) loss
@@ -201,6 +206,8 @@ class _AdversarialReweightingModel():
       elif adversary_loss_type == 'ce_loss':
         loss = self._get_cross_entropy_loss(labels, logits)
         tf.summary.histogram('ce_loss', loss)
+      elif adversary_loss_type == 'wce_loss':
+        loss = self._get_weighted_cross_entropy_loss(labels, logits, 2.0)
 
       # Multiplies loss by -1 so that the adversary loss is maximimized.
       adversary_weighted_loss = -(example_weights * loss)
