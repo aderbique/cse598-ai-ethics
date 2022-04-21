@@ -35,13 +35,13 @@ from absl import flags
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from group_agnostic_fairness import adversarial_reweighting_model
-from group_agnostic_fairness import baseline_model
-from group_agnostic_fairness import ips_reweighting_model
-from group_agnostic_fairness.data_utils.compas_input import CompasInput
-from group_agnostic_fairness.data_utils.law_school_input import LawSchoolInput
-from group_agnostic_fairness.data_utils.uci_adult_input import UCIAdultInput
-from group_agnostic_fairness.fairness_metrics import RobustFairnessMetrics
+import adversarial_reweighting_model
+import baseline_model
+import ips_reweighting_model
+from  data_utils.compas_input import CompasInput
+from  data_utils.law_school_input import LawSchoolInput
+from  data_utils.uci_adult_input import UCIAdultInput
+from  fairness_metrics import RobustFairnessMetrics
 
 FLAGS = flags.FLAGS
 
