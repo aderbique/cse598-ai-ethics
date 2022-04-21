@@ -171,7 +171,7 @@ class _AdversarialReweightingModel():
 
   def _get_weighted_cross_entropy_loss(self, labels, logits, pos_weights):
     """Computest the weighted cross-entropy loss over labels and logits from primary task"""
-    return tf.nn.weighted_cross_entropy_with_logits(targets=labels, logits=logits, pos_weight=0.5)
+    return tf.nn.weighted_cross_entropy_with_logits(targets=labels, logits=logits, pos_weight=pos_weights)
 
 
   def _adversary_loss(self,
