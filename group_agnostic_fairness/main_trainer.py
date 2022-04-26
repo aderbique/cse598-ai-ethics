@@ -29,6 +29,7 @@ from __future__ import print_function
 
 import json
 import os
+import sys
 
 from absl import app
 from absl import flags
@@ -43,6 +44,16 @@ from  data_utils.law_school_input import LawSchoolInput
 from  data_utils.uci_adult_input import UCIAdultInput
 from  fairness_metrics import RobustFairnessMetrics
 
+try:
+    output_file_name = "{}.txt".format(sys.argv[1])
+    loss_weight = sys.argv[1]
+except: 
+    output_file_name = 'results.txt'
+    loss_weight = 2.0
+
+print(loss_weight)
+
+
 FLAGS = flags.FLAGS
 
 MODEL_KEYS = [
@@ -55,7 +66,7 @@ flags.DEFINE_string("model_name", "adversarial_reweighting",
                     "Name of the model to run")
 flags.DEFINE_string("base_dir", "/tmp", "Base directory for output.")
 flags.DEFINE_string("model_dir", None, "Model directory for output.")
-flags.DEFINE_string("output_file_name", "results.txt",
+flags.DEFINE_string("output_file_name", output_file_name,
                     "Output file where to write metrics to.")
 flags.DEFINE_string("print_dir", None, "directory for tf.print output_stream.")
 
@@ -64,7 +75,6 @@ flags.DEFINE_integer("total_train_steps", 1280000, "Number of training steps.")
 flags.DEFINE_integer("test_steps", 1000, "Number of evaluation steps.")
 flags.DEFINE_integer("min_eval_frequency", 1000,
                      "How often (steps) to run evaluation.")
-
 # Flags for loading dataset
 flags.DEFINE_string("dataset_base_dir", "./data/compas", "(string) path to dataset directory")
 flags.DEFINE_string("dataset", "compas", "Name of the dataset to run")
@@ -86,6 +96,8 @@ flags.DEFINE_float("primary_learning_rate", 0.001,
                    "learning rate for main learner.")
 flags.DEFINE_string("optimizer", "Adagrad", "Name of the optimizer to use.")
 flags.DEFINE_string("activation", "relu", "Name of the activation to use.")
+
+flags.DEFINE_float("loss_weight", 2.0, "Model Metric to iterate on" )
 
 # # Flags for approaches that have an adversary
 # # Currently only for ''adversarial_reweighting'' Model.
@@ -180,6 +192,7 @@ def get_estimator(model_dir,
         adversary_hidden_units=FLAGS.adversary_hidden_units,
         primary_learning_rate=FLAGS.primary_learning_rate,
         adversary_learning_rate=FLAGS.adversary_learning_rate,
+        loss_weight = FLAGS.loss_weight,
         **kwargs)
   else:
     raise ValueError("Model {} is not implemented.".format(model_name))

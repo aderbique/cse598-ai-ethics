@@ -58,7 +58,8 @@ class _AdversarialReweightingModel():
       adversary_loss_type='ce_loss',
       adversary_include_label=True,
       upweight_positive_instance_only=False,
-      pretrain_steps=5000
+      pretrain_steps=5000,
+      loss_weight=2.0,
       ):
     """Initializes an adversarial reweighting estimator.
 
@@ -121,6 +122,7 @@ class _AdversarialReweightingModel():
     self._adversary_loss_type = adversary_loss_type
     self._pretrain_steps = pretrain_steps
     self._upweight_positive_instance_only = upweight_positive_instance_only
+    self._loss_weight = loss_weight
 
   def _primary_loss(self, labels, logits, example_weights):
     """Computes weighted sigmoid cross entropy loss.
@@ -141,7 +143,7 @@ class _AdversarialReweightingModel():
       primary_weighted_loss = tf.reduce_mean(primary_weighted_loss)
       return primary_weighted_loss
 
-  def _get_hinge_loss(self, labels, logits, pos_weights):
+  def _get_hinge_loss(self, labels, logits, pos_weights, loss_weight):
     """Computes hinge loss over labels and logits from primary task.
 
     Args:
@@ -162,7 +164,17 @@ class _AdversarialReweightingModel():
                                         logits=logits,
                                         reduction='none')
     # To avoid numerical errors at loss = ``0''
-    hinge_loss = tf.maximum(hinge_loss, 0.1)
+    hinge_loss = tf.maximum(hinge_loss, loss_weight)
+    tf.logging.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    tf.logging.info("")
+    tf.logging.info("")
+    tf.logging.info("")
+    tf.logging.info("")
+    tf.logging.info("")
+    tf.logging.info("")
+    tf.logging.info("")
+    tf.logging.info("The loss weight is: {}".format(str(loss_weight)))
+    print(5 + Hello)
     return hinge_loss
 
   def _get_cross_entropy_loss(self, labels, logits):
@@ -179,7 +191,9 @@ class _AdversarialReweightingModel():
                       logits,
                       pos_weights,
                       example_weights,
-                      adversary_loss_type='hinge_loss'):
+                      loss_weight,
+                      adversary_loss_type='hinge_loss',
+                      ):
     """Computes (negative) adversary loss.
 
     At the end of this function, the calculated loss
@@ -201,13 +215,13 @@ class _AdversarialReweightingModel():
     """
     with tf.name_scope(None, 'adversary_loss', (logits, labels, pos_weights)):
       if adversary_loss_type == 'hinge_loss':
-        loss = self._get_hinge_loss(labels, logits, pos_weights)
+        loss = self._get_hinge_loss(labels, logits, pos_weights, loss_weight)
         tf.summary.histogram('hinge_loss', loss)
       elif adversary_loss_type == 'ce_loss':
         loss = self._get_cross_entropy_loss(labels, logits)
         tf.summary.histogram('ce_loss', loss)
       elif adversary_loss_type == 'wce_loss':
-        loss = self._get_weighted_cross_entropy_loss(labels, logits, 2.0)
+        loss = self._get_weighted_cross_entropy_loss(labels, logits, loss_weight)
 
       # Multiplies loss by -1 so that the adversary loss is maximimized.
       adversary_weighted_loss = -(example_weights * loss)
@@ -321,6 +335,7 @@ class _AdversarialReweightingModel():
       primary_loss = self._primary_loss(class_labels, logits, example_weights)
       adversary_loss = self._adversary_loss(class_labels, logits, pos_weights,
                                             example_weights,
+                                            self._loss_weight,
                                             self._adversary_loss_type)
 
       # Sets up dictionaries used for computing performance metrics
