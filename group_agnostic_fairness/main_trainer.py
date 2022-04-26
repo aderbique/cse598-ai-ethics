@@ -48,7 +48,7 @@ try:
     output_file_name = "{}.txt".format(sys.argv[1])
     loss_weight = sys.argv[1]
 except: 
-    output_file_name = 'results.txt'
+    output_file_name = '2.0_results.txt'
     loss_weight = 2.0
 
 print(loss_weight)
@@ -97,7 +97,7 @@ flags.DEFINE_float("primary_learning_rate", 0.001,
 flags.DEFINE_string("optimizer", "Adagrad", "Name of the optimizer to use.")
 flags.DEFINE_string("activation", "relu", "Name of the activation to use.")
 
-flags.DEFINE_float("loss_weight", 2.0, "Model Metric to iterate on" )
+flags.DEFINE_float("loss_weight", loss_weight, "Model Metric to iterate on" )
 
 # # Flags for approaches that have an adversary
 # # Currently only for ''adversarial_reweighting'' Model.
@@ -184,6 +184,7 @@ def get_estimator(model_dir,
         **kwargs)
   elif model_name == "adversarial_reweighting":
     estimator = adversarial_reweighting_model.get_estimator(
+        loss_weight = FLAGS.loss_weight,
         adversary_loss_type=FLAGS.adversary_loss_type,
         adversary_include_label=FLAGS.adversary_include_label,
         upweight_positive_instance_only=FLAGS.upweight_positive_instance_only,
@@ -192,7 +193,6 @@ def get_estimator(model_dir,
         adversary_hidden_units=FLAGS.adversary_hidden_units,
         primary_learning_rate=FLAGS.primary_learning_rate,
         adversary_learning_rate=FLAGS.adversary_learning_rate,
-        loss_weight = FLAGS.loss_weight,
         **kwargs)
   else:
     raise ValueError("Model {} is not implemented.".format(model_name))

@@ -44,6 +44,7 @@ class _AdversarialReweightingModel():
 
   def __init__(
       self,
+      loss_weight,
       feature_columns,
       label_column_name,
       config,
@@ -58,8 +59,7 @@ class _AdversarialReweightingModel():
       adversary_loss_type='ce_loss',
       adversary_include_label=True,
       upweight_positive_instance_only=False,
-      pretrain_steps=5000,
-      loss_weight=2.0,
+      pretrain_steps=5000
       ):
     """Initializes an adversarial reweighting estimator.
 
@@ -165,20 +165,10 @@ class _AdversarialReweightingModel():
                                         reduction='none')
     # To avoid numerical errors at loss = ``0''
     hinge_loss = tf.maximum(hinge_loss, loss_weight)
-    tf.logging.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    tf.logging.info("")
-    tf.logging.info("")
-    tf.logging.info("")
-    tf.logging.info("")
-    tf.logging.info("")
-    tf.logging.info("")
-    tf.logging.info("")
-    tf.logging.info("The loss weight is: {}".format(str(loss_weight)))
-    print(5 + Hello)
-    return hinge_loss
 
   def _get_cross_entropy_loss(self, labels, logits):
     """Computes cross-entropy loss over labels and logits from primary task."""
+
     return tf.nn.sigmoid_cross_entropy_with_logits(labels=labels, logits=logits)
 
   def _get_weighted_cross_entropy_loss(self, labels, logits, pos_weights):
