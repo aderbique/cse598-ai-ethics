@@ -16,11 +16,11 @@
 set -e
 set -x
 
-python3.6 -m venv venv
+python3 -m venv venv
 
-source ./venv/bin/activate
+# source ./venv/bin/activate
 
-pip3 install -r group_agnostic_fairness/requirements.txt
+pip3 install -r requirements.txt
 
 # Select from the following models or tests to run.
 python -m group_agnostic_fairness.main_trainer

@@ -56,6 +56,10 @@ class RobustFairnessMetrics():
     self._protected_groups = protected_groups
     self._print_dir = print_dir
 
+    """
+    jfarabee: added false omission/discovery rates, negative predicted value
+    """
+
     self.metrics_fn = {
         "accuracy": tf.metrics.accuracy,
         "recall": tf.metrics.recall,
@@ -65,7 +69,10 @@ class RobustFairnessMetrics():
         "tn": tf.metrics.true_negatives,
         "fn": tf.metrics.false_negatives,
         "fpr": contrib_metrics.streaming_false_positive_rate,
-        "fnr": contrib_metrics.streaming_false_negative_rate
+        "fnr": contrib_metrics.streaming_false_negative_rate,
+        "for": tf.metrics.false_negatives / (tf.metrics.true_negatives + tf.metrics.false_negatives),
+        "fdr": tf.metrics.false_positives / (tf.metrics.true_positives + tf.metrics.false_positives),
+        "npv": tf.metrics.true_negatives / (tf.metrics.true_negatives + tf.metrics.false_negatives)
     }
 
     self.metrics_fn_th = {
@@ -274,6 +281,7 @@ class RobustFairnessMetrics():
               weights=masks_protected_group_1[group],
               num_thresholds=num_thresholds,
               **logistics_kwargs)
+
         for subgroup in self._subgroups:
           metrics["{} subgroup {}".format("auc", subgroup)] = tf.metrics.auc(
               weights=masks_subgroup[subgroup],

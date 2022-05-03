@@ -58,7 +58,7 @@ class FairnessMetricsTest(tf.test.TestCase, absltest.TestCase):
         protected_groups=self.protected_groups,
         subgroups=self.subgroups)
     self.eval_metric_keys = [
-        'accuracy', 'recall', 'precision', 'tp', 'tn', 'fp', 'fn', 'fpr', 'fnr'
+        'accuracy', 'recall', 'precision', 'tp', 'tn', 'fp', 'fn', 'fpr', 'fnr', 'for', 'fdr', 'npv'
     ]
 
   def _get_train_test_input_fn(self):
